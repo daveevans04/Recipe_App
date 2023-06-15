@@ -3,7 +3,12 @@ import React from 'react';
 
 const Recipe = () => {
   return (
-    <View>
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
       <Text>Recipe</Text>
     </View>
   );
