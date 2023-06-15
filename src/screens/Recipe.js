@@ -9,80 +9,9 @@ import {
 import {BlurView} from '@react-native-community/blur';
 import {SIZES, FONTS, COLORS, icons} from '../constants';
 import React, {useEffect, useRef, useState} from 'react';
+import {Viewers} from '../components';
 
 const Header_Height = 350;
-
-function renderHeaderBar() {
-  return (
-    <View>
-      
-    </View>
-  )
-}
-
-const RecipeCreatorDetail = ({selectedRecipe}) => {
-  return (
-    <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-      {/* Profile Picture */}
-      <View style={{width: 40, height: 40, marginLeft: 20}}>
-        <Image
-          source={selectedRecipe?.author?.profilePic}
-          style={{width: 40, height: 40, borderRadius: 20}}
-        />
-      </View>
-
-      {/* Labels */}
-      <View style={{flex: 1, marginHorizontal: 20}}>
-        <Text style={{color: COLORS.lightGray2, ...FONTS.body4}}>
-          Recipe by:
-        </Text>
-        <Text style={{color: COLORS.white2, ...FONTS.h3}}>
-          {selectedRecipe?.author?.name}
-        </Text>
-      </View>
-
-      {/* Button */}
-      <TouchableOpacity
-        style={{
-          width: 30,
-          height: 30,
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginRight: 20,
-          borderRadius: 5,
-          borderWidth: 1,
-          borderColor: COLORS.lightGreen1,
-        }}
-        onPress={console.log('View Profile')}>
-        <Image
-          source={icons.rightArrow}
-          style={{width: 15, height: 15, tintColor: COLORS.lightGreen1}}
-        />
-      </TouchableOpacity>
-    </View>
-  );
-};
-
-const RecipeCreator = ({selectedRecipe}) => {
-  if (Platform.OS === 'ios') {
-    return (
-      <BlurView style={{flex: 1, borderRadius: SIZES.radius}} blurType="dark">
-        <RecipeCreatorDetail selectedRecipe={selectedRecipe} />
-      </BlurView>
-    );
-  } else {
-    return (
-      <View
-        style={{
-          flex: 1,
-          borderRadius: SIZES.radius,
-          backgroundColor: COLORS.transparentBlack9,
-        }}>
-        <RecipeCreatorDetail selectedRecipe={selectedRecipe} />
-      </View>
-    );
-  }
-};
 
 const Recipe = ({navigation, route}) => {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
@@ -92,6 +21,172 @@ const Recipe = ({navigation, route}) => {
     let {recipe} = route.params;
     setSelectedRecipe(recipe);
   }, []);
+
+  function renderHeaderBar() {
+    return (
+      <View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 90,
+          flexDirection: 'row',
+          alignItems: 'flex-end',
+          justifyContent: 'space-between',
+          paddingHorizontal: SIZES.padding,
+          paddingBottom: 10,
+        }}>
+        {/* Screen overlay */}
+        <Animated.View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: COLORS.black,
+            opacity: scrollY.interpolate({
+              inputRange: [Header_Height - 100, Header_Height - 70],
+              outputRange: [0, 1],
+            }),
+          }}
+        />
+
+        {/* Header Bar Title */}
+        <Animated.View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            paddingBottom: 10,
+            opacity: scrollY.interpolate({
+              inputRange: [Header_Height - 100, Header_Height - 50],
+              outputRange: [0, 1],
+            }),
+            transform: [
+              {
+                translateY: scrollY.interpolate({
+                  inputRange: [Header_Height - 100, Header_Height - 50],
+                  outputRange: [50, 0],
+                  extrapolate: 'clamp',
+                }),
+              },
+            ],
+          }}>
+          <Text style={{color: COLORS.lightGray2, ...FONTS.body4}}>
+            Recipe by:
+          </Text>
+          <Text style={{color: COLORS.white2, ...FONTS.h3}}>
+            {selectedRecipe?.author?.name}
+          </Text>
+        </Animated.View>
+
+        {/* Back Button */}
+        <TouchableOpacity
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: 35,
+            width: 35,
+            borderRadius: 18,
+            borderWidth: 1,
+            borderColor: COLORS.lightGray,
+            backgroundColor: COLORS.transparentBlack5,
+          }}
+          onPress={() => navigation.goBack()}>
+          <Image
+            source={icons.back}
+            style={{width: 15, height: 15, tintColor: COLORS.lightGray}}
+          />
+        </TouchableOpacity>
+
+        {/* Bookmark */}
+        <TouchableOpacity
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: 35,
+            width: 35,
+          }}>
+          <Image
+            source={
+              selectedRecipe?.isBookmark ? icons.bookmarkFilled : icons.bookmark
+            }
+            style={{width: 30, height: 30, tintColor: COLORS.darkGreen}}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  const RecipeCreatorDetail = ({selectedRecipe}) => {
+    return (
+      <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+        {/* Profile Picture */}
+        <View style={{width: 40, height: 40, marginLeft: 20}}>
+          <Image
+            source={selectedRecipe?.author?.profilePic}
+            style={{width: 40, height: 40, borderRadius: 20}}
+          />
+        </View>
+
+        {/* Labels */}
+        <View style={{flex: 1, marginHorizontal: 20}}>
+          <Text style={{color: COLORS.lightGray2, ...FONTS.body4}}>
+            Recipe by:
+          </Text>
+          <Text style={{color: COLORS.white2, ...FONTS.h3}}>
+            {selectedRecipe?.author?.name}
+          </Text>
+        </View>
+
+        {/* Button */}
+        <TouchableOpacity
+          style={{
+            width: 30,
+            height: 30,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 20,
+            borderRadius: 5,
+            borderWidth: 1,
+            borderColor: COLORS.lightGreen1,
+          }}
+          onPress={console.log('View Profile')}>
+          <Image
+            source={icons.rightArrow}
+            style={{width: 15, height: 15, tintColor: COLORS.lightGreen1}}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const RecipeCreator = ({selectedRecipe}) => {
+    if (Platform.OS === 'ios') {
+      return (
+        <BlurView style={{flex: 1, borderRadius: SIZES.radius}} blurType="dark">
+          <RecipeCreatorDetail selectedRecipe={selectedRecipe} />
+        </BlurView>
+      );
+    } else {
+      return (
+        <View
+          style={{
+            flex: 1,
+            borderRadius: SIZES.radius,
+            backgroundColor: COLORS.transparentBlack9,
+          }}>
+          <RecipeCreatorDetail selectedRecipe={selectedRecipe} />
+        </View>
+      );
+    }
+  };
 
   function renderRecipeHeader() {
     return (
@@ -149,6 +244,50 @@ const Recipe = ({navigation, route}) => {
     );
   }
 
+  function renderInfo() {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          height: 130,
+          width: SIZES.width,
+          paddingHorizontal: 30,
+          paddingVertical: 20,
+          alignItems: 'center',
+        }}>
+        {/* Recipe Section */}
+        <View style={{flex: 1.5, justifyContent: 'center'}}>
+          <Text style={{...FONTS.h2}}>{selectedRecipe?.name}</Text>
+          <Text
+            style={{marginTop: 5, color: COLORS.lightGray2, ...FONTS.body4}}>
+            {selectedRecipe?.duration} | {selectedRecipe?.serving} Serving
+          </Text>
+        </View>
+        {/* Viewers */}
+        <View style={{flex: 1, justifyContent: 'center'}}>
+          <Viewers viewersList={selectedRecipe?.viewers} />
+        </View>
+      </View>
+    );
+  }
+
+  function renderIngredientHeader() {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          paddingHorizontal: 30,
+          marginTop: SIZES.radius,
+          marginBottom: SIZES.padding,
+        }}>
+        <Text style={{flex: 1, ...FONTS.h3}}>Ingredients</Text>
+        <Text style={{color: COLORS.lightGray2, ...FONTS.body4}}>
+          {selectedRecipe?.ingredients.length} items
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View
       style={{
@@ -163,8 +302,12 @@ const Recipe = ({navigation, route}) => {
           <View>
             {/* Header */}
             {renderRecipeHeader()}
+
             {/* Info */}
+            {renderInfo()}
+
             {/* Ingredient Title */}
+            {renderIngredientHeader()}
           </View>
         }
         scrollEventThrottle={16}
@@ -208,6 +351,7 @@ const Recipe = ({navigation, route}) => {
             </View>
           </View>
         )}
+        ListFooterComponent={<View style={{marginBottom: 100}}></View>}
       />
 
       {/* Render Header Bar */}
