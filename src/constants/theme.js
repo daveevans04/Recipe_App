@@ -52,6 +52,7 @@ export const SIZES = {
   width,
   height,
 };
+
 export const FONTS = {
   largeTitle: {fontFamily: 'Roboto-Black', fontSize: SIZES.largeTitle},
   h1: {fontFamily: 'Roboto-Black', fontSize: SIZES.h1, lineHeight: 36},
